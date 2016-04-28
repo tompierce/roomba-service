@@ -21,10 +21,20 @@ Simulates a roomba in a rectangular room.
 # start service
 > docker run -p 8080:8080 -v $PWD:/code --link roomba-db --name roomba-service -d roomba-service
 
-# check the logs 
+# it takes the server a minute or so to download dependencies the first time
+# while we wait, check the logs 
 > docker logs -f roomba-service
 ```
+
 Access the server at localhost:8080 (or 192.168.99.100:8080 on OSX)
+
+```
+# run a roomba simulation
+curl -H "Content-Type: application/json" -X POST -d '{"roomSize" : [5, 5],"coords" : [1, 2],"patches" : [[1, 0],[2, 2],[2, 3]],"instructions" : "NNESEESWNWW"}' http://192.168.99.100:8080/simulation
+
+# get a previous simulation
+curl 192.168.99.100:8080/simulation/1
+```
 
 # Running the tests
 
@@ -34,7 +44,7 @@ Access the server at localhost:8080 (or 192.168.99.100:8080 on OSX)
 > ./gradlew jacocoTestReport 
 ```
 
-# API
+# API Documentation
 ## Run a roomba simulation
 
 ### Request
@@ -78,4 +88,11 @@ GET /simulation/1
   "patches" : 1,
   "simId", "1"
 }
+```
+
+## Errors
+Both endpoints will return a JSON error response in the form:
+
+```
+{"error":"<error message>"}
 ```
